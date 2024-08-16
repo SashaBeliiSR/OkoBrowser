@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .history-item {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .url {
+            font-size: 14px;
+            color: #007BFF;
+        }
+
+        .time {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .clear-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .clear-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Browser History</h1>
+        <button class="clear-button">Clear History</button>
+        <div class="history-list">
+            <!-- History items will be inserted here -->
+        </div>
+        <template id="history-item-template">
+            <div class="history-item">
+                <div class="title">{Title}</div>
+                <a href="{url}" target="_blank"><div class="url">{url}</div></a>
+                <div class="time">{Time}</div>
+            </div>
+        </template>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch('history_data.json')
+                .then(response => response.json())
+                .then(data => {
+                    const template = document.getElementById('history-item-template');
+                    const historyList = document.querySelector('.history-list');
+                    data.forEach(item => {
+                        const clone = document.importNode(template.content, true);
+                        clone.querySelector('.title').textContent = item.title;
+                        clone.querySelector('.url').textContent = item.url;
+                        clone.querySelector('.url').setAttribute('href', item.url);
+                        clone.querySelector('.time').textContent = item.time;
+                        historyList.appendChild(clone);
+                    });
+                });
+
+            document.querySelector('.clear-button').addEventListener('click', function () {
+                fetch('clear_history', { method: 'POST' })
+                    .then(() => location.reload());
+            });
+        });
+    </script>
+</body>
+</html>
